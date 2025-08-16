@@ -355,8 +355,8 @@
       "name": "",
       "id": "56215ac8-4fd7-4603-a4ea-468b8737ddee",
       "clone": null,
-      "centerX": 195.50989189130712,
-      "centerY": 128.0415990338613
+      "centerX": 147.320897231451,
+      "centerY": 126.97357024351999
     },
     "name": "attack_2",
     "_components": [],
@@ -695,7 +695,7 @@
       "__id__": 15
     },
     "conditions": [],
-    "destinationStart": 0,
+    "destinationStart": 0.5,
     "relativeDestinationStart": false,
     "startEventBinding": {
       "__id__": 59
@@ -705,7 +705,7 @@
     },
     "duration": 0,
     "relativeDuration": false,
-    "exitConditionEnabled": false,
+    "exitConditionEnabled": true,
     "_exitCondition": 1
   },
   {
@@ -730,7 +730,7 @@
         "__id__": 62
       }
     ],
-    "destinationStart": 0,
+    "destinationStart": 0.4,
     "relativeDestinationStart": true,
     "startEventBinding": {
       "__id__": 63
@@ -738,10 +738,10 @@
     "endEventBinding": {
       "__id__": 64
     },
-    "duration": 0.5,
+    "duration": 0,
     "relativeDuration": true,
     "exitConditionEnabled": false,
-    "_exitCondition": 1
+    "_exitCondition": 0.5
   },
   {
     "__type__": "cc.animation.TriggerCondition",

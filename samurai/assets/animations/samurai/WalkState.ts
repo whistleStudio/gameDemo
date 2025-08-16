@@ -39,7 +39,7 @@ export class WalkState extends animation.StateMachineComponent {
     motionStateStatus: Readonly<animation.MotionStateStatus>
   ): void {
     // 角色位移
-    console.log("Walking...Dir:", controller.getValue_experimental("moveDir"));
+    // console.log("Walking...Dir:", controller.getValue_experimental("moveDir"));
     const moveDir = controller.getValue_experimental("moveDir") as Vec3;
     const deltaPos = moveDir.clone().multiplyScalar(this.speed); // 避免跳变深拷贝
     const pos = controller.node.position.clone().add(deltaPos);
