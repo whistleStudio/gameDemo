@@ -1,10 +1,10 @@
 import { _decorator, Component, Node, animation, Vec3, Animation } from "cc";
 const { ccclass, property } = _decorator;
-
+import { StatesManager } from "../../scripts/StatesManager";
 
 // jump -> attack2 如果设置周期!=0可能导致在跳跃快结束的时候劈砍，但周期未结束，再次进行跳跃动作
-@ccclass("JumpState")
-export class JumpState extends animation.StateMachineComponent {
+@ccclass("JumpSamState")
+export class JumpSamState extends animation.StateMachineComponent {
   private startY: number = 0;
   private maxHeight: number = 50;
   private speedX: number = 1.5;
@@ -13,12 +13,6 @@ export class JumpState extends animation.StateMachineComponent {
   private groundLimit = {min: -135, max: -75};
 
 
-  
-  /**
-   * Called right after a motion state is entered.
-   * @param controller The animation controller it within.
-   * @param motionStateStatus The status of the motion.
-   */
   public onMotionStateEnter(
     controller: animation.AnimationController,
     motionStateStatus: Readonly<animation.MotionStateStatus>
@@ -36,17 +30,11 @@ export class JumpState extends animation.StateMachineComponent {
     }
   }
 
-  /**
-   * Called when a motion state is about to exit.
-   * @param controller The animation controller it within.
-   * @param motionStateStatus The status of the motion.
-   */
+
   public onMotionStateExit(
     controller: animation.AnimationController,
     motionStateStatus: Readonly<animation.MotionStateStatus>
   ): void {
-    // Can be overrode
-
     // 校正：实际完整1遍播放完毕时，progress略大于0
     if (Math.floor(motionStateStatus.progress * 100) == 0) {
       controller.setValue("jumpProgress", 0); // 重置跳跃进度
@@ -57,19 +45,17 @@ export class JumpState extends animation.StateMachineComponent {
     else controller.setValue("jumpProgress", motionStateStatus.progress); // 重置跳跃进度
     console.log("JumpState: onMotionStateExit", motionStateStatus.progress, controller.getValue("jumpProgress"));
     this.maxHeight = 50; // 重置最大高度
+    // 更新全局状态-玩家位置
+    StatesManager.instance.playerPos = controller.node.position.clone();
   }
 
-  /**
-   * Called when a motion state updated except for the first and last frame.
-   * @param controller The animation controller it within.
-   * @param motionStateStatus The status of the motion.
-   */
+
   public onMotionStateUpdate(
     controller: animation.AnimationController,
     motionStateStatus: Readonly<animation.MotionStateStatus>
   ): void {
     // console.log("JumpState: onMotionStateUpdate", this.jumpProgress);
-    // 抛物线为模拟重力高度变化规律非轨迹。仅跳跃为完整抛物线；jump->attack2抛物线前半段；attack2->jump抛物线后半段
+    /* 跳跃模拟：抛物线为模拟重力高度变化规律非轨迹。仅跳跃为完整抛物线；jump->attack2抛物线前半段；attack2->jump抛物线后半段 */
     const t = motionStateStatus.progress; // 归一化时间
     // console.log("JumpState: onMotionStateUpdate", t);
     const height = this.maxHeight * (1 - Math.pow(2 * t - 1, 2)); // 模拟抛物线变化的高度
@@ -77,23 +63,19 @@ export class JumpState extends animation.StateMachineComponent {
     // Y轴位移
     pos.y = this.startY + height;
     // X轴位移
-    const moveDir = controller.getValue_experimental("moveDir") as Vec3;
+    const moveDir = StatesManager.instance.playerMoveDir.clone();
     if (Math.abs(moveDir.x) > 0) pos.x += this.speedX * Math.round(moveDir.x);
     controller.node.setPosition(pos);
+    // 更新全局状态-玩家位置
+    StatesManager.instance.playerPos = controller.node.position.clone();
   }
 
-  /**
-   * Called right after a state machine is entered.
-   * @param controller The animation controller it within.
-   */
+
   public onStateMachineEnter(controller: animation.AnimationController) {
     // Can be overrode
   }
 
-  /**
-   * Called right after a state machine is entered.
-   * @param controller The animation controller it within.
-   */
+
   public onStateMachineExit(controller: animation.AnimationController) {
     // Can be overrode
   }

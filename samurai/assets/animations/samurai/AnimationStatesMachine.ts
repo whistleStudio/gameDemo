@@ -1,5 +1,6 @@
 import { _decorator, Component, input, Node, Input, EventKeyboard, KeyCode, animation, EventTouch, Vec3 } from "cc";
 const { ccclass, property } = _decorator;
+import { StatesManager } from "../../scripts/StatesManager";
 
 @ccclass("AnimationStatesMachine")
 export class AnimationStatesMachine extends Component {
@@ -23,9 +24,11 @@ export class AnimationStatesMachine extends Component {
     if (dir.x !== 0 || dir.y !== 0) {
       this.animationController.setValue("clickWalk", true);
       this.animationController.setValue_experimental("moveDir", dir.clone().normalize()); // 避免跳变最好深拷贝
+      StatesManager.instance.playerMoveDir = dir.clone().normalize();
     } else {
       this.animationController.setValue("clickWalk", false);
       this.animationController.setValue_experimental("moveDir", Vec3.ZERO);
+      StatesManager.instance.playerMoveDir = Vec3.ZERO;
     }
   }
 

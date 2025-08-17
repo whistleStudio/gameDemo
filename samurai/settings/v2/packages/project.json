@@ -7,5 +7,22 @@
       "fitHeight": true,
       "fitWidth": false
     }
+  },
+  "physics": {
+    "collisionGroups": [
+      {
+        "index": 1,
+        "name": "ENEMY"
+      },
+      {
+        "index": 2,
+        "name": "ATTACK"
+      }
+    ],
+    "collisionMatrix": {
+      "0": 7,
+      "1": 5,
+      "2": 3
+    }
   }
 }

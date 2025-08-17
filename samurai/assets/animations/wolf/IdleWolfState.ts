@@ -1,10 +1,11 @@
-import { _decorator, Component, Node, animation, director, Vec3 } from "cc";
+import { _decorator, Component, Node, animation } from "cc";
 const { ccclass, property } = _decorator;
+import { StatesManager } from "../../scripts/StatesManager";
 
-@ccclass("WalkState")
-export class WalkState extends animation.StateMachineComponent {
-  speed: number = 2;
-  groundLimit = {min: -135, max: -75};
+@ccclass("IdleWolfState")
+export class IdleWolfState extends animation.StateMachineComponent {
+  private ALERT_DISTANCE: number = 300;
+
   /**
    * Called right after a motion state is entered.
    * @param controller The animation controller it within.
@@ -26,7 +27,7 @@ export class WalkState extends animation.StateMachineComponent {
     controller: animation.AnimationController,
     motionStateStatus: Readonly<animation.MotionStateStatus>
   ): void {
-    // Can be overrode
+
   }
 
   /**
@@ -38,14 +39,12 @@ export class WalkState extends animation.StateMachineComponent {
     controller: animation.AnimationController,
     motionStateStatus: Readonly<animation.MotionStateStatus>
   ): void {
-    // 角色位移
-    // console.log("Walking...Dir:", controller.getValue_experimental("moveDir"));
-    const moveDir = controller.getValue_experimental("moveDir") as Vec3;
-    const deltaPos = moveDir.clone().multiplyScalar(this.speed); // 避免跳变深拷贝
-    const pos = controller.node.position.clone().add(deltaPos);
-    // 限制y轴范围
-    pos.y = Math.max(this.groundLimit.min, Math.min(this.groundLimit.max, pos.y));
-    controller.node.setPosition(pos);
+    /* 唤醒 */
+    const distance2Player = controller.node.position.clone().subtract(StatesManager.instance.playerPos).length();
+    // console.log("距离玩家的距离:", distance2Player);
+    if (distance2Player < this.ALERT_DISTANCE) {
+      controller.setValue("isAwake", true);
+    }
   }
 
   /**
