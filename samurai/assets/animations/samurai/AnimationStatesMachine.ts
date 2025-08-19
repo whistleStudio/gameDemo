@@ -33,7 +33,7 @@ export class AnimationStatesMachine extends Component {
   }
 
   onKeyDown(event: EventKeyboard) {
-    console.log("Key pressed:", event.keyCode);
+    // console.log("Key pressed:", event.keyCode);
     this.keyPressed.add(event.keyCode);
 
     switch (event.keyCode) {
@@ -45,15 +45,21 @@ export class AnimationStatesMachine extends Component {
         this.animationController.setValue("clickJump", true);
         console.log("Jump animation triggered");
         break;
+      case KeyCode.KEY_K:
+        this.animationController.setValue("clickShield", true);
+        break;
       // Add more cases for other animations
     }
   }
 
   onKeyUp(event: EventKeyboard) {
-    console.log("Key released:", event.keyCode);
+    // console.log("Key released:", event.keyCode);
     this.keyPressed.delete(event.keyCode);
 
     switch (event.keyCode) {
+      case KeyCode.KEY_K:
+        this.animationController.setValue("clickShield", false);
+        break;
     }
   }
 

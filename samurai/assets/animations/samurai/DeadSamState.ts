@@ -1,15 +1,9 @@
 import { _decorator, Component, Node, animation } from "cc";
 const { ccclass, property } = _decorator;
-import { StatesManager } from "../../scripts/StatesManager";
 
-
-@ccclass("WalkWolfState")
-export class WalkWolfState extends animation.StateMachineComponent {
-  private ATTACK_RANGE: number = 50; // 攻击范围
-  private ATTACK1_CD: number = 0.5; // 攻击1冷却时间(s)
-  private time_attack1: number;
-  private SPEED: number = 2; // 移动速度
-
+@ccclass("DeadSamState")
+export class DeadSamState extends animation.StateMachineComponent {
+  private playIdx: number = 0;
   /**
    * Called right after a motion state is entered.
    * @param controller The animation controller it within.
@@ -20,7 +14,6 @@ export class WalkWolfState extends animation.StateMachineComponent {
     motionStateStatus: Readonly<animation.MotionStateStatus>
   ): void {
     // Can be overrode
-    this.restTim()
   }
 
   /**
@@ -33,7 +26,7 @@ export class WalkWolfState extends animation.StateMachineComponent {
     motionStateStatus: Readonly<animation.MotionStateStatus>
   ): void {
     // Can be overrode
-    controller.setValue("canAttack", false);
+    console.log("DeadSamState exited:", this.playIdx);
   }
 
   /**
@@ -45,21 +38,24 @@ export class WalkWolfState extends animation.StateMachineComponent {
     controller: animation.AnimationController,
     motionStateStatus: Readonly<animation.MotionStateStatus>
   ): void {
-    /* AI寻玩家 */
-    const deltaVec = StatesManager.instance.playerPos.clone().subtract(controller.node.position);
-    const distance = deltaVec.length();
-    // console.log("Wolf distance to player:", distance);
-    if (distance <= this.ATTACK_RANGE) {
-      if (new Date().getTime() - this.time_attack1 > this.ATTACK1_CD * 1000) {
-        controller.setValue("canAttack", true);
-      }
-    } else {
-      const dir = deltaVec.normalize();
-      const deltaPos = dir.multiplyScalar(this.SPEED);
-      controller.node.setPosition(controller.node.position.add(deltaPos));
-      const scaleX = dir.x > 0 ? 1 : -1;
-      controller.node.setScale(scaleX, 1, 1);
-      // console.log("Wolf is moving towards player");
+    console.log("DeadSamState playing:", this.playIdx);
+    const progress = motionStateStatus.progress;
+    // 图片透明裁剪的原因，导致位置有些偏移，纠正一下
+    const pos = controller.node.position.clone();
+    const lastPlayIdx = this.playIdx;
+    switch (true) {
+      case progress <= 1/3:
+        break;
+      case progress <= 2/3:
+        this.playIdx = 1
+        pos.y -= 10;
+        break;
+      case progress <= 1:
+        this.playIdx = 2
+        pos.y -= 20;
+    }
+    if (lastPlayIdx !== this.playIdx) {
+      controller.node.setPosition(pos);
     }
   }
 
@@ -77,9 +73,5 @@ export class WalkWolfState extends animation.StateMachineComponent {
    */
   public onStateMachineExit(controller: animation.AnimationController) {
     // Can be overrode
-  }
-
-  private restTim () {
-    this.time_attack1 = new Date().getTime();
   }
 }
