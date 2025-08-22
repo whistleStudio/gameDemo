@@ -35,7 +35,8 @@ export class WalkSamState extends animation.StateMachineComponent {
     if (StatesManager.instance.isBlocked) return; // 被阻挡时可改变朝向但不能移动
     const deltaPos = moveDir.clone().multiplyScalar(this.speed); // 避免跳变深拷贝
     const pos = controller.node.position.clone().add(deltaPos);
-    // 限制y轴范围
+    // 限制移动范围
+    pos.x = Math.max(-StatesManager.instance.visibleSize.width / 2, Math.min(StatesManager.instance.visibleSize.width / 2, pos.x));
     pos.y = Math.max(this.groundLimit.min, Math.min(this.groundLimit.max, pos.y));
     controller.node.setPosition(pos);
     // 更新全局状态-玩家位置

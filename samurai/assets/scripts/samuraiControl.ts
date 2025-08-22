@@ -1,6 +1,6 @@
-import { _decorator, BoxCollider2D, Collider2D, Component, Contact2DType, IPhysics2DContact, Node,  animation, Vec2, Vec3} from "cc";
+import { _decorator, BoxCollider2D, Collider2D, Component, Contact2DType, IPhysics2DContact, Node,  animation, Vec2, Vec3, UI, UITransform, find, view} from "cc";
 const { ccclass, property } = _decorator;
-import { StatesManager } from "./StatesManager";
+import { StatesManager, EventBus } from "./StatesManager";
 
 interface colliderRect {
   left: number;
@@ -18,9 +18,17 @@ export class samuraiControl extends Component {
   @property
   speed: number = 15; // 脱离速度
 
+  isHitTarget: boolean = false;
+
   animationController: animation.AnimationController;
 
   start() {
+    // 屏幕尺寸
+    const canvas = find("Canvas");
+    console.log("size:", view.getVisibleSize());
+    console.log("visible size:", StatesManager.instance.visibleSize);
+
+
     this.animationController = this.getComponent(animation.AnimationController);
 
     // 受伤检定
@@ -86,19 +94,34 @@ export class samuraiControl extends Component {
     console.log("Attack collider enabled");
   }
 
+  onCheckAttack1Keyframe () {
+    if (this.isHitTarget) {
+      EventBus.emit("freezeFrame", {dur: 0.3});
+    }
+  }
+
   onDeactiveAttack1 () {
     this.attackCollider.enabled = false;
+    this.isHitTarget = false;
     console.log("Attack collider disabled");
   }
 
   // group: 1 角色主体 / 2 敌人 / 4 攻击区
   // 受伤回调
   onPlayerBeginContact(selfCollider: Collider2D, otherCollider: Collider2D, contact: IPhysics2DContact | null) {
-    console.log("Player begin contact with:", otherCollider.node.name);
+    // console.log("Player begin contact with:", otherCollider.node.name);
     if (otherCollider.group === 4) {
       const isShield = this.animationController.getValue("clickShield");
       const isDead = this.animationController.getValue("isDead");
-      if (Math.abs(selfCollider.node.position.y - otherCollider.node.position.y) <= 10 && !isShield && !isDead) { // 纵深接近且未格挡
+      // console.log("before set --- isShield:", isShield, "isShieldBroken:", this.animationController.getValue("isShieldBroken"));
+      // 面朝方
+      const playerFacingDir = new Vec2(selfCollider.node.scale.x > 0 ? 1 : -1, 0);
+      const enemy2playerDir = new Vec2(otherCollider.node.position.x - selfCollider.node.position.x, 0); // 横板卷轴忽视了y
+      const isShieldBroken = playerFacingDir.dot(enemy2playerDir) < 0; // 有效格挡防御同攻击方向的夹角范围放在了cos±90度内(>0), 虽然这里实际角度只会0或180
+      this.animationController.setValue("isShieldBroken", isShieldBroken); // 破盾
+      // console.log("after set --- isShield:", isShield, "isShieldBroken:", isShieldBroken);
+      if (Math.abs(selfCollider.node.position.y - otherCollider.node.position.y) <= 10 && !isDead) { // 纵深接近且未格挡
+        if (isShield && !isShieldBroken) return; // 格挡成功
         this.animationController.setValue("isHurt", true)
         StatesManager.instance.playerHp -= 0.34; // 掉血
         console.log("playerHp:", StatesManager.instance.playerHp)
@@ -110,11 +133,11 @@ export class samuraiControl extends Component {
   }
 
   onAttackBeginContact (selfCollider: Collider2D, otherCollider: Collider2D, contact: IPhysics2DContact | null) {
-      
-      console.log("selfCollider:", selfCollider.group, selfCollider.tag);
-      console.log("otherCollider:", otherCollider.group, otherCollider.tag);
-
-
+    if (otherCollider.group === 2) {
+      /* 打击感实现 */
+      EventBus.emit("cameraShake", {dur: 0.3, magnitude: 2}); // 镜头晃动
+      this.isHitTarget = true;
+    }
   }
 
 

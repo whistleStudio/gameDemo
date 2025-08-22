@@ -31,6 +31,16 @@
         "params": []
       },
       {
+        "frame": 0.5,
+        "func": "",
+        "params": []
+      },
+      {
+        "frame": 0.5,
+        "func": "onCheckAttack1Keyframe",
+        "params": []
+      },
+      {
         "frame": 0.625,
         "func": "",
         "params": []

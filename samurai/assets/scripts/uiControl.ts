@@ -15,7 +15,7 @@ export class uiControl extends Component {
   update(deltaTime: number) {}
 
   // 调整血条
-  changeHpHandle (val: number) {
-    this.hpBar.progress = val;
+  changeHpHandle ({hp}) {
+    this.hpBar.progress = hp;
   }
 }

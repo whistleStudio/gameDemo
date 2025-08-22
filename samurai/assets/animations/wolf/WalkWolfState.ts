@@ -45,6 +45,7 @@ export class WalkWolfState extends animation.StateMachineComponent {
     controller: animation.AnimationController,
     motionStateStatus: Readonly<animation.MotionStateStatus>
   ): void {
+    
     /* AI寻玩家 */
     const deltaVec = StatesManager.instance.playerPos.clone().subtract(controller.node.position);
     const distance = deltaVec.length();
