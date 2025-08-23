@@ -21,12 +21,12 @@
     "_exoticAnimation": null,
     "_events": [
       {
-        "frame": 0.375,
+        "frame": 0.5,
         "func": "",
         "params": []
       },
       {
-        "frame": 0.375,
+        "frame": 0.5,
         "func": "onActivateAttack1",
         "params": []
       },

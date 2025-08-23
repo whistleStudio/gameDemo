@@ -1,4 +1,4 @@
-import { _decorator, BoxCollider2D, Collider2D, Component, Contact2DType, IPhysics2DContact, Node,  animation, Vec2, Vec3, UI, UITransform, find, view} from "cc";
+import { _decorator, BoxCollider2D, Collider2D, Component, Contact2DType, IPhysics2DContact, Node,  animation, Vec2, Vec3, UI, UITransform, find, view, AudioClip, resources, AudioSource, ParticleSystem2D, Color} from "cc";
 const { ccclass, property } = _decorator;
 import { StatesManager, EventBus } from "./StatesManager";
 
@@ -17,10 +17,38 @@ export class samuraiControl extends Component {
   attackCollider: BoxCollider2D = null;
   @property
   speed: number = 15; // 脱离速度
+  @property(ParticleSystem2D)
+  bloodHitEffect: ParticleSystem2D = null;
+  @property(ParticleSystem2D)
+  bloodHurtEffect: ParticleSystem2D = null;
 
   isHitTarget: boolean = false;
 
   animationController: animation.AnimationController;
+
+  audioClipsHitAir: AudioClip[] = [];
+  audioClipsHitFlesh: AudioClip[] = [];
+  audioClipsShield: AudioClip[] = [];
+  audioClipHurt: Record<string, AudioClip> = {};
+
+  audioSource: AudioSource = null;
+
+  protected onLoad(): void {
+    this.audioSource = this.getComponent(AudioSource);
+
+    resources.loadDir("audios/samurai/hit-air", AudioClip, (err, assets) => {
+      this.audioClipsHitAir = assets;
+    })
+    resources.loadDir("audios/samurai/hit-flesh", AudioClip, (err, assets) => {
+      this.audioClipsHitFlesh = assets;
+    })
+    resources.loadDir("audios/samurai/shield", AudioClip, (err, assets) => {
+      this.audioClipsShield = assets;
+    })
+    resources.load("audios/samurai/hurt/claw-flesh0", AudioClip, (err, asset) => {
+      this.audioClipHurt[101] = asset;
+    })
+  }
 
   start() {
     // 屏幕尺寸
@@ -95,15 +123,30 @@ export class samuraiControl extends Component {
   }
 
   onCheckAttack1Keyframe () {
+    let audioList = this.audioClipsHitAir;
     if (this.isHitTarget) {
-      EventBus.emit("freezeFrame", {dur: 0.3});
+      EventBus.emit("freezeFrame", {dur: 0.1}); // 画面定格
+      audioList = this.audioClipsHitFlesh; // 刀肉音效
+      // 飙血
+      const playerWorldPos = this.node.getWorldPosition();
+      const attackDirX = this.node.scale.x > 0 ? 1 : -1;
+      this.bleedEffectPlay(this.bloodHitEffect, playerWorldPos, {offsetX: 50, dir: attackDirX, colorHexStr: "4E1010", speed: 350});
     }
+    this.playAudio(audioList);
   }
 
   onDeactiveAttack1 () {
     this.attackCollider.enabled = false;
     this.isHitTarget = false;
-    console.log("Attack collider disabled");
+  }
+
+  onActivateAttack2 () { // 跳劈偷懒只写了个砍空气的逻辑
+    this.attackCollider.enabled = true;
+    this.playAudio(this.audioClipsHitAir);
+  }
+
+  onDeactivateAttack2 () {
+    this.attackCollider.enabled = false;
   }
 
   // group: 1 角色主体 / 2 敌人 / 4 攻击区
@@ -121,9 +164,24 @@ export class samuraiControl extends Component {
       this.animationController.setValue("isShieldBroken", isShieldBroken); // 破盾
       // console.log("after set --- isShield:", isShield, "isShieldBroken:", isShieldBroken);
       if (Math.abs(selfCollider.node.position.y - otherCollider.node.position.y) <= 10 && !isDead) { // 纵深接近且未格挡
-        if (isShield && !isShieldBroken) return; // 格挡成功
+        if (isShield && !isShieldBroken) { // 格挡成功
+          this.playAudio(this.audioClipsShield);
+          EventBus.emit("cameraShake", {dur: 0.1, magnitude: 2}); // 镜头晃动
+          const pos = selfCollider.node.position.clone();
+          pos.x += Math.sign(pos.x - otherCollider.node.position.x) * 1;
+          selfCollider.node.setPosition(pos);
+          return;
+        }
+        const tag = otherCollider.tag;
+        if (this.audioClipHurt[tag]) {
+          this.audioSource.playOneShot(this.audioClipHurt[tag]);
+        }
         this.animationController.setValue("isHurt", true)
         StatesManager.instance.playerHp -= 0.34; // 掉血
+        // 飙血动画
+        const playerWorldPos = this.node.getWorldPosition();
+        const bleedDir = enemy2playerDir.x > 0 ? -1 : 1;
+        this.bleedEffectPlay(this.bloodHurtEffect, playerWorldPos, {dir: bleedDir});
         console.log("playerHp:", StatesManager.instance.playerHp)
         if (StatesManager.instance.playerHp <= 0.001) {
           this.animationController.setValue("isDead", true);
@@ -135,10 +193,25 @@ export class samuraiControl extends Component {
   onAttackBeginContact (selfCollider: Collider2D, otherCollider: Collider2D, contact: IPhysics2DContact | null) {
     if (otherCollider.group === 2) {
       /* 打击感实现 */
-      EventBus.emit("cameraShake", {dur: 0.3, magnitude: 2}); // 镜头晃动
+      EventBus.emit("cameraShake", {dur: 0.2, magnitude: 6}); // 镜头晃动
       this.isHitTarget = true;
     }
   }
 
+  playAudio(audioClips: AudioClip[]) {
+    const randomIndex = Math.floor(Math.random() * audioClips.length);
+    const audioClip = audioClips[randomIndex];
+    this.audioSource.playOneShot(audioClip);
+  }
 
+
+  bleedEffectPlay(bloodParticle: ParticleSystem2D, startPos: Vec3, {offsetX = 5, dir = 1, colorHexStr = "8B1B1B", speed = 100} = {}) {
+    bloodParticle.node.setWorldPosition(startPos.x + dir * offsetX, startPos.y, startPos.z);
+    bloodParticle.angle = dir > 0 ? 0 : 180;
+    bloodParticle.startColor = new Color(colorHexStr);
+    bloodParticle.startSpin = dir > 0 ? -120 : 120;
+    bloodParticle.endSpin = dir > 0 ? -100 : 100;
+    bloodParticle.speed = speed;
+    bloodParticle.resetSystem();
+  }
 }

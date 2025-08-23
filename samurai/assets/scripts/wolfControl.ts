@@ -42,6 +42,11 @@ export class wolfControl extends Component {
         if (this.hp <= 0.001) {
           this.animController.setValue("isDead", true);
         }
+        // 增加打击感：击退
+        const pos = selfCollider.node.position.clone()
+        const knockbackDir = Math.sign(pos.x - otherCollider.node.position.x); // 只留方向
+        pos.x += knockbackDir * 12
+        selfCollider.node.setPosition(pos);
       }
     }
   }

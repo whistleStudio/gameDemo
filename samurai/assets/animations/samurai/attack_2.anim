@@ -19,7 +19,28 @@
       }
     ],
     "_exoticAnimation": null,
-    "_events": [],
+    "_events": [
+      {
+        "frame": 0.25,
+        "func": "",
+        "params": []
+      },
+      {
+        "frame": 0.25,
+        "func": "onActivateAttack2",
+        "params": []
+      },
+      {
+        "frame": 0.375,
+        "func": "",
+        "params": []
+      },
+      {
+        "frame": 0.375,
+        "func": "onDeactivateAttack2",
+        "params": []
+      }
+    ],
     "_embeddedPlayers": [],
     "_additiveSettings": {
       "__id__": 6
