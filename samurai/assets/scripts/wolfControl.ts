@@ -33,7 +33,7 @@ export class wolfControl extends Component {
 
   onBodyBeginContact (selfCollider: BoxCollider2D, otherCollider: BoxCollider2D) {
     // 受伤检定
-    if (otherCollider.group === 4) {
+    if (otherCollider.group === 4 && otherCollider.tag === 100) { // tag 101为玩家攻击碰撞体
       const isDead = this.animController.getValue("isDead");
       if (Math.abs(selfCollider.node.position.y - otherCollider.node.position.y) < 10 && !isDead) {
         // 触发受伤逻辑

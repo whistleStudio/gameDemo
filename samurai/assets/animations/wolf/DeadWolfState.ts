@@ -1,5 +1,6 @@
 import { _decorator, Component, Node, animation, Vec3 } from "cc";
 const { ccclass, property } = _decorator;
+import { EventBus, StatesManager } from "../../scripts/StatesManager";
 
 @ccclass("DeadWolfState")
 export class DeadWolfState extends animation.StateMachineComponent {
@@ -29,6 +30,7 @@ export class DeadWolfState extends animation.StateMachineComponent {
   ): void {
     // Can be overrode
     controller.node.destroy()
+    EventBus.emit("enemyCountChanged", { count: StatesManager.instance.enemyCount - 1 });
   }
 
   /**

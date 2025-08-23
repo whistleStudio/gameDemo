@@ -946,7 +946,7 @@
         "__id__": 79
       }
     ],
-    "destinationStart": 0.4,
+    "destinationStart": 0,
     "relativeDestinationStart": true,
     "startEventBinding": {
       "__id__": 80
@@ -957,7 +957,7 @@
     "duration": 0,
     "relativeDuration": true,
     "exitConditionEnabled": false,
-    "_exitCondition": 0.5
+    "_exitCondition": 0.4
   },
   {
     "__type__": "cc.animation.TriggerCondition",

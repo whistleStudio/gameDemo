@@ -10,7 +10,6 @@ export class JumpSamState extends animation.StateMachineComponent {
   private speedX: number = 1.5;
   private jumpProgress: number = 0; // 跳跃进度
   private dropH: number = 0; // 下落点的高度
-  private groundLimit = {min: -135, max: -75};
 
 
   public onMotionStateEnter(
@@ -25,8 +24,8 @@ export class JumpSamState extends animation.StateMachineComponent {
       // const modifiedProgress = Math.abs(this.jumpProgress - 0.5) + 0.5;
       this.dropH = this.maxHeight * (1 - Math.pow(2 * this.jumpProgress - 1, 2)); // 初始起跳上升的距离
       // 防止超出下边界
-      this.maxHeight = Math.min(this.dropH, this.startY - this.groundLimit.min); // attack2->jump, 终点起始时间为0.5次，所以此时位置应为最高点
-      this.startY = Math.max(this.groundLimit.min, controller.node.position.y - this.dropH); // 初始起跳位置
+      this.maxHeight = Math.min(this.dropH, this.startY - StatesManager.instance.moveAreaLimit.bottom); // attack2->jump, 终点起始时间为0.5次，所以此时位置应为最高点
+      this.startY = Math.max(StatesManager.instance.moveAreaLimit.bottom, controller.node.position.y - this.dropH); // 初始起跳位置
     }
   }
 

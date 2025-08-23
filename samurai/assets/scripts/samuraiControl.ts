@@ -1,13 +1,6 @@
 import { _decorator, BoxCollider2D, Collider2D, Component, Contact2DType, IPhysics2DContact, Node,  animation, Vec2, Vec3, UI, UITransform, find, view, AudioClip, resources, AudioSource, ParticleSystem2D, Color} from "cc";
 const { ccclass, property } = _decorator;
-import { StatesManager, EventBus } from "./StatesManager";
-
-interface colliderRect {
-  left: number;
-  right: number;
-  top: number;
-  bottom: number;
-}
+import { StatesManager, EventBus, Area } from "./StatesManager";
 
 @ccclass("samuraiControl")
 export class samuraiControl extends Component {
@@ -77,7 +70,7 @@ export class samuraiControl extends Component {
     const roles = this.node.parent.children;
     let isBlockedFlag = false;
     for (let role of roles) {
-      if (role !== this.node) { // 不是当前玩家节点
+      if (role !== this.node && role.active) { // 不是当前玩家节点且激活
         const enemyCollider = role.getComponents(BoxCollider2D)[0]; // 第一个盒子为身体
         const enemyRect = this._getColliderRect(enemyCollider, role.position);
         // 伪纵深：只在y坐标接近时判断阻挡
@@ -93,7 +86,7 @@ export class samuraiControl extends Component {
   }
 
   // 获取碰撞盒
-  _getColliderRect(collider: BoxCollider2D, position: Vec3): colliderRect {
+  _getColliderRect(collider: BoxCollider2D, position: Vec3): Area {
     const colliderPos = new Vec2(
       position.x + this.playerCollider.offset.x,
       position.y + this.playerCollider.offset.y
@@ -108,7 +101,7 @@ export class samuraiControl extends Component {
   }
 
   // AABB重叠检定
-  _isRectOverlap(rectA: colliderRect, rectB: colliderRect) {
+  _isRectOverlap(rectA: Area, rectB: Area) {
     return !(
       rectA.right < rectB.left ||
       rectA.left > rectB.right ||

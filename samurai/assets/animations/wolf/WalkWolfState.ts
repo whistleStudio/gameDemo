@@ -8,7 +8,7 @@ export class WalkWolfState extends animation.StateMachineComponent {
   private ATTACK_RANGE: number = 50; // 攻击范围
   private ATTACK1_CD: number = 0.5; // 攻击1冷却时间(s)
   private time_attack1: number;
-  private SPEED: number = 2; // 移动速度
+  private SPEED: number = 0; // 移动速度
 
   /**
    * Called right after a motion state is entered.
@@ -56,7 +56,7 @@ export class WalkWolfState extends animation.StateMachineComponent {
       }
     } else {
       const dir = deltaVec.normalize();
-      const deltaPos = dir.multiplyScalar(this.SPEED);
+      const deltaPos = dir.multiplyScalar(this.SPEED + Math.random()); // 避免多个敌人移动一致
       controller.node.setPosition(controller.node.position.add(deltaPos));
       const scaleX = dir.x > 0 ? 1 : -1;
       controller.node.setScale(scaleX, 1, 1);

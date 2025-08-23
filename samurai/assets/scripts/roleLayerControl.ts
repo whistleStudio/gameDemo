@@ -1,14 +1,26 @@
-import { _decorator, animation, Component, Node } from "cc";
+import { _decorator, animation, Component, instantiate, Node, Prefab } from "cc";
 const { ccclass, property } = _decorator;
-import { EventBus } from "./StatesManager";
+import { EventBus, StatesManager } from "./StatesManager";
 
 @ccclass("roleLayerControl")
 export class roleLayerControl extends Component {
+  @property(Prefab)
+  enemyWolf: Prefab = null;
+
   protected onLoad(): void {
     EventBus.on("freezeFrame", this.onFreezFrame, this);
   }
 
-  start() {}
+  start() {
+    const areaWidth = StatesManager.instance.moveAreaLimit.right - StatesManager.instance.moveAreaLimit.left;
+    const areaHeight = StatesManager.instance.moveAreaLimit.top - StatesManager.instance.moveAreaLimit.bottom;  
+    // 创建敌人
+    for (let v of Array(StatesManager.instance.enemyCount)) {
+      const enemy = instantiate(this.enemyWolf);
+      enemy.setPosition(Math.random() * (areaWidth / 2), Math.random() * areaHeight + StatesManager.instance.moveAreaLimit.bottom, 0); // 中线右，出生点位横向离玩家一定距离
+      this.node.addChild(enemy);
+    }
+  }
 
   update(deltaTime: number) {
     /* 角色近远景层级动态切换 */

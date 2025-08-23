@@ -5,7 +5,6 @@ import { StatesManager } from "../../scripts/StatesManager";
 @ccclass("WalkSamState")
 export class WalkSamState extends animation.StateMachineComponent {
   speed: number = 2;
-  groundLimit = {min: -135, max: -75};
 
   public onMotionStateEnter(
     controller: animation.AnimationController,
@@ -37,7 +36,7 @@ export class WalkSamState extends animation.StateMachineComponent {
     const pos = controller.node.position.clone().add(deltaPos);
     // 限制移动范围
     pos.x = Math.max(-StatesManager.instance.visibleSize.width / 2, Math.min(StatesManager.instance.visibleSize.width / 2, pos.x));
-    pos.y = Math.max(this.groundLimit.min, Math.min(this.groundLimit.max, pos.y));
+    pos.y = Math.max(StatesManager.instance.moveAreaLimit.bottom, Math.min(StatesManager.instance.moveAreaLimit.top, pos.y));
     controller.node.setPosition(pos);
     // 更新全局状态-玩家位置
     StatesManager.instance.playerPos = controller.node.position.clone();
