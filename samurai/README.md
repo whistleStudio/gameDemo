@@ -1,4 +1,5 @@
 这个demo主要是针对动画状态机的学习记录 （有用的话，斯个大吧⭐
+
 项目下载完成后，从Cocos Dashboard中加载项目目录即可，fitHeight, 内置2D物理系统
 
 项目演示视频链接：https://www.bilibili.com/video/BV1M9eBz8EfM/?spm_id_from=333.1387.homepage.video_card.click&vd_source=20edf767ec72b97832bba2fc3aca50b8
