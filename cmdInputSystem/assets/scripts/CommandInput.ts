@@ -108,6 +108,7 @@ export class CommandInput extends Component {
                 // 如果有多个匹配，取优先级最高的
                 if (!matched || cmd.priority > matched.priority) {
                     matched = cmd;
+                    console.log("匹配到指令:", cmd.name);
                 }
             }
         }
@@ -128,7 +129,7 @@ export class CommandInput extends Component {
 
         let idx = cmd.sequence.length - 1; // 从后往前匹配
         let lastTime = -1;
-
+        console.log("buffer:", this.buffer)
         for (let i = this.buffer.length - 1; i >= 0 && idx >= 0; i--) {
             const input = this.buffer[i];
 
@@ -140,7 +141,7 @@ export class CommandInput extends Component {
 
                 lastTime = input.time;
                 idx--; // 匹配下一个
-            }
+            } else break; // 当前按键不匹配，停止检查
         }
 
         // 如果序列全部匹配成功，idx 会小于 0
