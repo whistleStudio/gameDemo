@@ -1,12 +1,8 @@
-import { _decorator, Component, Node, animation, Vec2, director, game } from "cc";
-import { wizardControl } from "../../scripts/wizardControl";
+import { _decorator, Component, Node, animation } from "cc";
 const { ccclass, property } = _decorator;
 
-@ccclass("WalkState_wizard")
-export class WalkState_wizard extends animation.StateMachineComponent {
-  wizardControl: wizardControl | null = null;
-  speed: number = 100;
-
+@ccclass("SpellState_wizard")
+export class SpellState_wizard extends animation.StateMachineComponent {
   /**
    * Called right after a motion state is entered.
    * @param controller The animation controller it within.
@@ -17,7 +13,6 @@ export class WalkState_wizard extends animation.StateMachineComponent {
     motionStateStatus: Readonly<animation.MotionStateStatus>
   ): void {
     // Can be overrode
-    this.wizardControl = controller.getComponent(wizardControl);
   }
 
   /**
@@ -30,7 +25,7 @@ export class WalkState_wizard extends animation.StateMachineComponent {
     motionStateStatus: Readonly<animation.MotionStateStatus>
   ): void {
     // Can be overrode
-    // this.wizardRigidBody!.linearVelocity = new Vec2(0, 0);
+    console.log("child motion exit!")
   }
 
   /**
@@ -42,11 +37,7 @@ export class WalkState_wizard extends animation.StateMachineComponent {
     controller: animation.AnimationController,
     motionStateStatus: Readonly<animation.MotionStateStatus>
   ): void {
-    const dt = game.deltaTime;
-    const dir = this.wizardControl!.dir;
-    // console.log("dir:", dir);
-    controller.node.setScale(dir.x, 1);
-    controller.node.setPosition(controller.node.position.x + dir.x * dt * this.speed, controller.node.position.y);
+    // Can be overrode
   }
 
   /**
@@ -55,6 +46,7 @@ export class WalkState_wizard extends animation.StateMachineComponent {
    */
   public onStateMachineEnter(controller: animation.AnimationController) {
     // Can be overrode
+    console.log("state machine enter")
   }
 
   /**
@@ -62,6 +54,9 @@ export class WalkState_wizard extends animation.StateMachineComponent {
    * @param controller The animation controller it within.
    */
   public onStateMachineExit(controller: animation.AnimationController) {
-    // Can be overrode
+    controller.setValue("isCasting", false);
+    controller.setValue("triggerAttack1", false);
+    controller.setValue("triggerAttack2", false);
+    console.log("state machine exit!")
   }
 }

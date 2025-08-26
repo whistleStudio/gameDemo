@@ -80,7 +80,7 @@
           },
           "physics-2d": {
             "_value": true,
-            "_option": "physics-2d-box2d"
+            "_option": "physics-2d-builtin"
           },
           "physics-2d-box2d": {
             "_value": false
@@ -205,7 +205,7 @@
           "marionette",
           "mask",
           "particle-2d",
-          "physics-2d-box2d",
+          "physics-2d-builtin",
           "profiler",
           "rich-text",
           "spine-3.8",

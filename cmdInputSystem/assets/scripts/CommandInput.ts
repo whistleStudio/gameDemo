@@ -27,7 +27,7 @@ interface Command {
 export class CommandInput extends Component {
     // 输入缓存队列，保存最近输入的按键
     private buffer: InputEvent[] = [];
-    private readonly MAX_BUFFER = 20; // 最大缓存数量
+    private readonly MAX_BUFFER = 10; // 最大缓存数量
 
     // 指令列表
     private commands: Command[] = [];
@@ -88,11 +88,11 @@ export class CommandInput extends Component {
     // 初始化默认的技能指令（可自定义）
     private initDefaultCommands() {
         this.commands = [
-            // 波动拳：↓ → + A
-            { name: "fireball", sequence: ["DOWN", "RIGHT", "A"], maxStepInterval: 300, cooldown: 200, priority: 1 },
+            // 闪电链：↓ → + A
+            { name: "lightCharge", sequence: ["DOWN", "RIGHT", "A"], maxStepInterval: 300, cooldown: 200, priority: 1 },
 
-            // 升龙拳：→ ↓ → + B
-            { name: "uppercut", sequence: ["RIGHT", "DOWN", "RIGHT", "B"], maxStepInterval: 250, cooldown: 200, priority: 2 },
+            // 闪电球：↓ → ↓ → + A
+            { name: "lightBall", sequence: ["DOWN", "RIGHT", "DOWN", "RIGHT", "A"], maxStepInterval: 300, cooldown: 200, priority: 2 },
 
             // 前冲：→ → + A
             { name: "dash", sequence: ["RIGHT", "RIGHT", "A"], maxStepInterval: 200, cooldown: 150, priority: 0 },

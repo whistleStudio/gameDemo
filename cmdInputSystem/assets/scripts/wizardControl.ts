@@ -8,6 +8,11 @@ export class wizardControl extends Component {
 
   keyPressed: Set<KeyCode> = new Set();
   dir: Vec2 = new Vec2();
+  moveTimer: number = 0;
+  moveDelayFrames: number = 5;
+  moveDelayTime: number = 0.1; // seconds
+
+  isTriggerSpell: boolean = false;
 
   protected onLoad(): void {
     input.on(Input.EventType.KEY_DOWN, this.onKeyDown, this);
@@ -21,14 +26,28 @@ export class wizardControl extends Component {
     if (this.keyPressed.has(KeyCode.ARROW_LEFT) || this.keyPressed.has(KeyCode.KEY_A)) this.dir.x -=1;
     if (this.keyPressed.has(KeyCode.ARROW_RIGHT) || this.keyPressed.has(KeyCode.KEY_D)) this.dir.x +=1;
     if (this.dir.x !== 0) {
-      this.animCtrl.setValue("clickMove", true);
+      if ( this.moveTimer < this.moveDelayTime) { // 防止搓招过程中因为移动导致小碎步
+        this.moveTimer += deltaTime;
+      } else {
+        this.animCtrl.setValue("clickMove", true);  
+      }
     } else {
+      this.moveTimer = 0;
       this.animCtrl.setValue("clickMove", false);
     }
   }
 
   onKeyDown(event: EventKeyboard) {
     this.keyPressed.add(event.keyCode);
+    switch (event.keyCode) {
+      case KeyCode.KEY_J:
+        this.animCtrl.setValue("triggerAttack1", true);
+        console.log("isCasting:", this.animCtrl.getValue("isCasting"));
+        break;
+      case KeyCode.KEY_K:
+        this.animCtrl.setValue("triggerAttack2", true);
+        break;
+    }
   }
 
   onKeyUp(event: EventKeyboard) {
