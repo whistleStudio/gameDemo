@@ -8,6 +8,8 @@ export class PlayerCombat extends Component {
   private animCtrl: animation.AnimationController = null!;
   @property(Prefab)
   private chargePrefab: Prefab = null!;
+  @property(Prefab)
+  private firePrefab: Prefab = null!;
 
   private cmdInput: CommandInput = null!;
 
@@ -19,14 +21,21 @@ export class PlayerCombat extends Component {
   // 技能触发回调
   onCommand(name: string) {
     this.animCtrl.setValue("isCasting", true);
-    if (name === "lightCharge") {
-      console.log("释放闪电链!");
-      this.animCtrl.setValue("triggerLightCharge", true);
+    const form = this.animCtrl.getValue("form");
+    if (name === "elementalWhip") {
+      if (form === 0) {
+        console.log("释放闪电链!");
+        this.animCtrl.setValue("triggerLightCharge", true);
+      } else {
+        console.log("释放火焰喷射!");
+        this.animCtrl.setValue("triggerFlamejet", true);
+      }
     } else if (name === "lightBall") {
       console.log("闪电球!");
       this.animCtrl.setValue("triggerLightBall", true);
-    } else if (name === "dash") {
-      console.log("前冲!");
+    } else if (name === "fireBall") {
+      console.log("火焰球!");
+      this.animCtrl.setValue("triggerFireBall", true);
     }
   }
 
@@ -34,10 +43,15 @@ export class PlayerCombat extends Component {
   activateCharge () {
     const chargeNode = instantiate(this.chargePrefab);
     const playerWorldPos = this.node.getWorldPosition();
-    console.log("playerWorldPos:", playerWorldPos);
     find("Canvas/spellLayer").addChild(chargeNode);
     chargeNode.setWorldPosition(playerWorldPos.x + 30, playerWorldPos.y + 20, playerWorldPos.z);
-    console.log("spellCharge:", chargeNode.getWorldPosition());
-    // this.node.addChild(chargeNode);
+  }
+
+  // 火焰球动效
+  activateFire () {
+    const fireNode = instantiate(this.firePrefab);
+    const playerWorldPos = this.node.getWorldPosition();
+    find("Canvas/spellLayer").addChild(fireNode);
+    fireNode.setWorldPosition(playerWorldPos.x + 43, playerWorldPos.y + 20, playerWorldPos.z);
   }
 }
