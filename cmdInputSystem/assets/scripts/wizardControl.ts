@@ -1,13 +1,14 @@
 import { _decorator, Component, Input, input, KeyCode, Node, EventKeyboard, Vec2, animation } from "cc";
 const { ccclass, property } = _decorator;
 
-const touchKeyMap: Record<string, KeyCode> = {
+export const touchKeyMap: Record<string, KeyCode> = {
   "LEFT": KeyCode.ARROW_LEFT,
   "RIGHT": KeyCode.ARROW_RIGHT,
   "UP": KeyCode.ARROW_UP,
   "DOWN": KeyCode.ARROW_DOWN,
   "A": KeyCode.KEY_J,
   "B": KeyCode.KEY_K,
+  "C": KeyCode.KEY_L,
   "T": KeyCode.KEY_T,
 };
 

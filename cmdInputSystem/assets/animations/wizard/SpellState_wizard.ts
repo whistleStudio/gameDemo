@@ -25,7 +25,7 @@ export class SpellState_wizard extends animation.StateMachineComponent {
     motionStateStatus: Readonly<animation.MotionStateStatus>
   ): void {
     // Can be overrode
-    console.log("child motion exit!")
+    // console.log("child motion exit!")
   }
 
   /**
@@ -46,7 +46,7 @@ export class SpellState_wizard extends animation.StateMachineComponent {
    */
   public onStateMachineEnter(controller: animation.AnimationController) {
     // Can be overrode
-    console.log("state machine enter")
+    // console.log("state machine enter")
   }
 
   /**
@@ -57,6 +57,6 @@ export class SpellState_wizard extends animation.StateMachineComponent {
     controller.setValue("isCasting", false);
     controller.setValue("triggerAttack1", false);
     controller.setValue("triggerAttack2", false);
-    console.log("state machine exit!")
+    // console.log("state machine exit!")
   }
 }

@@ -17,7 +17,7 @@ const { ccclass, property } = _decorator;
 // 可以根据需要扩展，比如加上“投技键”、“必杀键”等
 export type InputKey = "LEFT" | "RIGHT" | "UP" | "DOWN" | "A" | "B" | "C";
 
-function isInputKey(key: any): key is InputKey { // 触摸按钮自定义property的类型守卫
+export function isInputKey(key: any): key is InputKey { // 触摸按钮自定义property的类型守卫
   return ["LEFT", "RIGHT", "UP", "DOWN", "A", "B", "C"].indexOf(key) >= 0;
 }
 
@@ -38,6 +38,9 @@ interface Command {
 
 @ccclass("CommandInput")
 export class CommandInput extends Component {
+  // 调试回调: 用于刷新实时输入匹配技能状态
+  debugHandler: Function | null = null;
+
   // 变身形态
   private formIdx: number = 0; // 0 雷 / 1 火
 
@@ -109,8 +112,12 @@ export class CommandInput extends Component {
 
     // 将输入存入缓存
     this.pushInput(key);
+    
     // 检查是否有指令匹配
     this.checkCommands();
+
+    // 回调
+    this.debugHandler && this.debugHandler(key);
   }
 
   // 把输入放入缓存队列
@@ -171,7 +178,7 @@ export class CommandInput extends Component {
 
     let idx = cmd.sequence.length - 1; // 从后往前匹配
     let lastTime = -1;
-    console.log("buffer:", this.buffer);
+    // console.log("buffer:", this.buffer);
     for (let i = this.buffer.length - 1; i >= 0 && idx >= 0; i--) {
       const input = this.buffer[i];
 
