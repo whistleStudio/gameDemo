@@ -42,16 +42,12 @@ export class PlayerCombat extends Component {
   // 闪电球动效
   activateCharge () {
     const chargeNode = instantiate(this.chargePrefab);
-    const playerWorldPos = this.node.getWorldPosition();
     find("Canvas/spellLayer").addChild(chargeNode);
-    chargeNode.setWorldPosition(playerWorldPos.x + 30, playerWorldPos.y + 20, playerWorldPos.z);
   }
 
   // 火焰球动效
   activateFire () {
     const fireNode = instantiate(this.firePrefab);
-    const playerWorldPos = this.node.getWorldPosition();
     find("Canvas/spellLayer").addChild(fireNode);
-    fireNode.setWorldPosition(playerWorldPos.x + 43, playerWorldPos.y + 20, playerWorldPos.z);
   }
 }

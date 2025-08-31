@@ -1,4 +1,5 @@
 import { _decorator, Component, Input, input, KeyCode, Node, EventKeyboard, Vec2, animation } from "cc";
+import { CommandInput } from "./CommandInput";
 const { ccclass, property } = _decorator;
 
 export const touchKeyMap: Record<string, KeyCode> = {
@@ -16,6 +17,8 @@ export const touchKeyMap: Record<string, KeyCode> = {
 export class wizardControl extends Component {
   @property(animation.AnimationController)
   animCtrl: animation.AnimationController | null = null;
+  @property(CommandInput)
+  cmdInput: CommandInput | null = null;
 
   keyPressed: Set<KeyCode> = new Set();
   dir: Vec2 = new Vec2();
@@ -23,8 +26,9 @@ export class wizardControl extends Component {
   moveDelayFrames: number = 5;
   moveDelayTime: number = 0.1; // seconds
   formIdx: number = 0; // 0 雷 / 1 火
-
   isTriggerSpell: boolean = false;
+  changeFacingCallback: Function = null;
+
 
   protected onLoad(): void {
     input.on(Input.EventType.KEY_DOWN, this.onKeyDown, this);
@@ -43,7 +47,19 @@ export class wizardControl extends Component {
       if ( this.moveTimer < this.moveDelayTime) { // 防止搓招过程中因为移动导致小碎步
         this.moveTimer += deltaTime;
       } else {
-        this.animCtrl.setValue("clickMove", true);  
+        this.animCtrl.setValue("clickMove", true);
+        // console.log("Moving:", this.dir);
+        // 停止一定时间后再改变朝向,避免技能释放过程中的朝向改变，实际还是用延时规避
+        this.changeFacingCallback && this.unschedule(this.changeFacingCallback);
+        const lastDirX = this.dir.x; // 避免回调时的改变
+        this.changeFacingCallback = () => {
+          if (lastDirX > 0) {
+            this.cmdInput.facingRight = true;
+          } else this.cmdInput.facingRight = false;
+          console.log("Facing Right:", this.cmdInput.facingRight);
+          this.changeFacingCallback = null;
+        }
+        this.scheduleOnce(this.changeFacingCallback, 0.12);
       }
     } else {
       this.moveTimer = 0;
@@ -77,17 +93,9 @@ export class wizardControl extends Component {
     this.keyPressed.delete(keyCode);
   }
 
-  // // 虚拟手柄
-  // addVirtualInput (touchKey: string) {
-  //   const keyCode = touchKeyMap[touchKey];
-  //   if (keyCode) {
-  //     this.keyPressed.add(keyCode);
-  //   }
-  // }
-  // removeVirtualInput (touchKey: string) {
-  //   const keyCode = touchKeyMap[touchKey];
-  //   if (keyCode) {
-  //     this.keyPressed.delete(keyCode);
-  //   }
-  // }
+  // 改变朝向
+  changeFacing(isRight: boolean) {
+    this.cmdInput.facingRight = isRight;
+  }
+
 }

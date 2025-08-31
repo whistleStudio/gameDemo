@@ -32,7 +32,7 @@ export class virtualCircleBtn extends Component {
   update(deltaTime: number) {}
 
   protected onTouchStart(event: EventTouch): void {
-    console.log("touched:", this.keyTouch);
+    // console.log("touched:", this.keyTouch);
     this.cmdInput?.onKeyDown(null, this.keyTouch);
     this.wizardCtrl?.onKeyDown(null, this.keyTouch);
   }
