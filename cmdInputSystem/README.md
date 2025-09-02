@@ -1,4 +1,10 @@
+..夏天都快过完了 好像什么事也没有做
+
+演示视频: <a href="https://www.bilibili.com/video/BV1fgawzKERU/?spm_id_from=333.1387.homepage.video_card.click&vd_source=20edf767ec72b97832bba2fc3aca50b8">https://www.bilibili.com/video/BV1fgawzKERU/?spm_id_from=333.1387.homepage.video_card.click&vd_source=20edf767ec72b97832bba2fc3aca50b8</a>
+
 *📒 NOTE*
+
+cocos3.8.6 fitHeight 内置2D物理系统 marionette动画系统
 
 - 搓招机制：（可用从后往前或从前往后匹配）
 
